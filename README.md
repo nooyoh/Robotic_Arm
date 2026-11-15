@@ -8,15 +8,14 @@
 
 | 항목 | 내용 |
 |------|------|
-| **프로젝트명** | 저지연 실시간 동작 모방 로봇팔 (MedArm) |
-| **과목** | 사물인터넷프로그래밍 |
-| **기간** | 2025 |
+| **프로젝트명** | 저지연 실시간 동작 모방 로봇팔 |
+| **기간** | 2025.11.03 ~ 2025.12.07. |
 | **인원** | 5인 팀 프로젝트 |
 | **목표** | 사람의 관절 각도와 손가락 상태를 측정해 로봇팔이 낮은 지연으로 동작을 모방하도록 구현 |
 
-착용형 센서 보드(STM32)가 어깨·팔꿈치 관절 각도 3축과 손가락 스위치 4개의 상태를 읽어 15바이트 패킷으로 만듭니다. 패킷은 ESP32를 통해 블루투스로 PC에 전달되고, PC가 이를 로봇 제어 보드(STM32)로 다시 보내 서보 모터 7개를 구동합니다.
+착용형 센서 보드(STM32)가 어깨·팔꿈치 관절 각도 3축과 손가락 스위치 4개의 상태를 읽어 15바이트 패킷으로 만든다. 패킷은 ESP32를 통해 블루투스로 PC에 전달되고, PC가 이를 로봇 제어 보드(STM32)로 다시 보내 서보 모터 7개를 구동한다.
 
-로봇 보드는 패킷을 처리한 뒤 **ACK를 역방향으로 돌려보내고**, 센서 보드가 이를 받아 **전 구간 왕복 지연(RTT)을 직접 측정**합니다. 측정한 지연은 다음 패킷에 실려 웹 대시보드에 실시간으로 표시됩니다.
+로봇 보드는 패킷을 처리한 뒤 **ACK를 역방향으로 돌려보내고**, 센서 보드가 이를 받아 **전 구간 왕복 지연(RTT)을 직접 측정**한다. 측정한 지연은 다음 패킷에 실려 웹 대시보드에 실시간으로 표시된다.
 
 <br>
 
@@ -103,7 +102,7 @@ flowchart LR
 | 분류 | 기술 |
 |------|------|
 | **Firmware** | ![C](https://img.shields.io/badge/C-A8B9CC?style=flat-square&logo=c&logoColor=black) ![STM32](https://img.shields.io/badge/STM32_HAL-03234B?style=flat-square&logo=stmicroelectronics&logoColor=white) ![Arduino](https://img.shields.io/badge/Arduino_(ESP32)-00979D?style=flat-square&logo=arduino&logoColor=white) |
-| **PC / Middleware** | ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) `pyserial` `multiprocessing` `shared_memory` |
+| **PC / Middleware** | ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)  |
 | **Dashboard** | ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white) ![Matplotlib](https://img.shields.io/badge/Matplotlib-11557C?style=flat-square) ![NumPy](https://img.shields.io/badge/NumPy-013243?style=flat-square&logo=numpy&logoColor=white) |
 | **Communication** | UART, Bluetooth SPP, USB Virtual COM |
 | **Peripheral** | ADC, Timer Input Capture, Timer PWM, GPIO, EXTI |
@@ -119,8 +118,8 @@ flowchart LR
 | **센서** | 가변저항 (300°) | 관절 1 각도 측정 (ADC 12bit) |
 | | PWM 출력 절대 엔코더 ×2 | 관절 2·3 각도 측정 (Input Capture) |
 | | 스위치 ×4 | 손가락 굽힘 상태 감지 |
-| **액추에이터** | 서보 모터 ×3 | 로봇팔 관절 구동 (TIM3 CH1~3, 50Hz PWM) |
-| | 서보 모터 ×4 | 그리퍼 손가락 구동 (TIM4 CH1~4, 50Hz PWM) |
+| **액추에이터** | 서보 MG996R ×3 | 로봇팔 관절 구동 (TIM3 CH1~3, 50Hz PWM) |
+| | 서보 SG90 ×4 | 그리퍼 손가락 구동 (TIM4 CH1~4, 50Hz PWM) |
 
 ### 핀 연결
 
@@ -153,16 +152,6 @@ flowchart LR
 5. 센서 STM32: ACK 수신 시각 - 전송 시각 = RTT
 6. 편도 지연 = RTT / 2
 ```
-
-| 구간 | 예상 지연 |
-|------|----------|
-| STM32 → ESP32 (UART) | ~1ms |
-| ESP32 → PC (BT) | ~10ms |
-| PC → Robot STM32 (USB) | ~2ms |
-| Robot 처리 + ACK 전송 | ~1ms |
-| 역방향 (동일) | ~14ms |
-| **총 RTT** | **~28ms** |
-| **편도 (E2E)** | **~14ms** |
 
 ### 3. 패킷 무결성 검증
 - 2바이트 헤더(0xAA 0x55) 기반 상태 머신으로 패킷 동기화
@@ -200,27 +189,12 @@ Robotic_Arm/
 
 <br>
 
-## 👥 팀 협업
-
-| 이름 | 역할 | 담당 업무 |
-|------|------|----------|
-| **이호윤** | 송신부 · 대시보드 | 송신(센서) STM32 펌웨어 구현, 웹 대시보드 코드 통합, 실시간성 개선 (Full E2E RTT 측정 구조) |
-| 팀원 2 | | |
-| 팀원 3 | | |
-| 팀원 4 | | |
-| 팀원 5 | | |
-
-- **송신팀 / 수신팀 분리 개발**: 15바이트 패킷 규격을 먼저 확정해 송신부·수신부를 병렬로 개발
-- **인터페이스 통합**: 송신 펌웨어 → ESP32 → PC → 수신 펌웨어로 이어지는 패킷·ACK 경로를 통합 테스트
-
-<br>
-
 ## 💻 개발 환경
 
 | 구분 | 환경 |
 |------|------|
 | **OS** | Windows |
-| **STM32 IDE** | STM32CubeIDE (HAL, CubeMX 코드 생성) |
+| **STM32 IDE** | STM32CubeIDE (HAL, CubeMX) |
 | **ESP32 IDE** | Arduino IDE (`BluetoothSerial`) |
 | **Python** | Python 3.10+ |
 | **Python 패키지** | `pyserial`, `streamlit`, `numpy`, `matplotlib` |
@@ -252,11 +226,3 @@ streamlit run app.py
 **4. RTT 확인**
 - 센서 STM32 시리얼 모니터: `[E2E] RTT=25 ms (avg=24 ms) | A1=45.2 A2=30.1 A3=-10.5`
 - 대시보드: ⚡ 핵심 지표 → E2E Latency
-
-### 문제 해결
-
-| 증상 | 확인 사항 |
-|------|----------|
-| ACK가 오지 않음 | ESP32 GPIO17 ↔ 센서 STM32 PA10 (USART1_RX) 연결 확인 |
-| RTT가 100ms 근처로 고정 | ACK 타임아웃 상태 → 위 연결 확인 |
-| 대시보드 E2E가 0으로 표시 | `main.py`가 먼저 실행 중인지 확인 (공유 메모리 생성 필요) |
