@@ -21,11 +21,7 @@
 
 ## 🎬 동작영상
 
-<!-- 동작 영상 또는 GIF를 아래에 추가하세요 -->
-<!-- 예시: [![동작영상](썸네일.png)](https://youtu.be/영상ID) -->
-<!-- 예시: ![demo](docs/demo.gif) -->
-
-> 🔧 동작 영상 추가 예정
+https://github.com/user-attachments/assets/8db3b9fe-21bf-4142-811f-bd00503fafb9
 
 <br>
 
